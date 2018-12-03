@@ -89,4 +89,7 @@ export interface Shh {
     ): void;
     // TODO: type every method
 }
-export class Bzz {} // TODO: Type
+export class Bzz {
+    download(hash: string): Promise<Buffer>;
+    setProvider(provider: Object): boolean;
+} // TODO: type every method
