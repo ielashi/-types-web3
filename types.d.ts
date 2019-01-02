@@ -71,14 +71,31 @@ export interface Log {
     blockNumber: number;
 }
 export interface Subscribe<T> {
-    subscription: {
-        id: string;
-        subscribe(callback?: Callback<Subscribe<T>>): Subscribe<T>;
-        unsubscribe(callback?: Callback<boolean>): void | boolean;
-        arguments: object;
-    };
+    id: string;
+    subscribe(callback?: Callback<Subscribe<T>>): Subscribe<T>;
+    unsubscribe(callback?: Callback<boolean>): void | boolean;
+    arguments: object;
     on(type: "data" | "changed", handler: (data: T) => void): void;
     on(type: "error", handler: (data: Error) => void): void;
+}
+
+export interface IncomingMessage {
+	hash: string;
+	padding: string;
+	payload: string;
+	pow: number;
+	recipientPublicKey: string;
+	sig: string;
+	timestamp: number;
+	topic: string;
+	ttl: number;
+}
+
+export interface Subscription<T> {
+  id: string;
+  arguments: object;
+  on(type: "data", handler: (data:T) => void): void;
+  on(type: "error", handler: (data: Error) => void): void;
 }
 
 export interface Shh {
@@ -87,6 +104,39 @@ export interface Shh {
         password: string,
         callback: Callback<string>
     ): void;
+
+
+    subscribe(
+      messages: string,
+      options: {
+          symKeyID?: string;
+          privateKeyID?: string;
+          sig?: string;
+          topics?: string[];
+          minPow?: number;
+          allowP2P?: boolean;
+      },
+      cb?: (error, message:IncomingMessage, subscription) => void
+    ):Promise<Subscription<IncomingMessage>>;
+    post(
+      options: {
+        symKeyID?: string;
+        pubKey?: string;
+        sig?: string;
+        ttl?: number;
+        topic?: string;
+        payload?: string;
+        padding?: number;
+        powTime?: number;
+        powTarget?: number;
+        targetPeer?: number;
+      },
+      cb?: (error,hash:string) => void
+    ):Promise<void>;
+    unsubscribe(id:string): void;
+    clearSubscriptions(keepIsSyncing?:boolean): void;
+    newKeyPair(cb?: (hash:string) => void):string;
+    getPublicKey(id, cb?: (hash:string)=>void):string;
     // TODO: type every method
 }
 export class Bzz {
