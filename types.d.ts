@@ -99,6 +99,8 @@ export interface Subscription<T> {
 }
 
 export interface Shh {
+    addPrivateKey(privateKey: string): Promise<string>;
+    getPublicKey(id: string): Promise<string>;
     generateSymKeyFromPassword(password: string): Promise<string>;
     generateSymKeyFromPassword(
         password: string,
